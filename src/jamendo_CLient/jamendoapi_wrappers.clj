@@ -26,9 +26,9 @@
      :else nil)
     "UTF-8")))
 
-(defn- get-paged-tags [num pagination]
-  "Returns the list of tags from 'num' page. All tags
-   divided on 'pagination' pages."
+(defn get-paged-tags [num pagination]
+  "Returns the list of tags from 'pagination' page. All tags
+   divided on 'num' pages."
   (let
       [jamendo-answer (call-jamendo-xml "name" "tag"
                                         (str "n=" num "&pn=" pagination))
@@ -36,3 +36,21 @@
     (map
      (fn [x] (:content x))
      (:content (xml/parse xml-stream)))))
+
+;; func - should be lambda function with one parameter - number
+;; of requested page, which calls proper function with necessary
+;; parameters.
+(defn- get-list-with-delay [func]
+  "Makes list from lists returned by 'get-paged-*' functions with
+   one second delay between calls."
+  (defn- get-list-with-delay-iter [func num]
+    ; we need to sleep one second or more  before each call - this is a
+    ; requirement of Jamendo API Terms Of Use.
+    (. Thread sleep 1500)
+    (let [requested-list (func num)]
+      (println requested-list)
+      (cond
+       (= requested-list '()) '()
+       :else (concat requested-list
+                     (get-list-with-delay-iter func (+ num 1))))))
+  (get-list-with-delay-iter func 1))
