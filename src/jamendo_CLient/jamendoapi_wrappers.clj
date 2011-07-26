@@ -26,16 +26,44 @@
      :else nil)
     "UTF-8")))
 
+(defn- get-from-jamendo-smth [field unit params xml-postparser]
+  "Get smth content from Jamendo in paged mode."
+  (let
+      [jamendo-answer (call-jamendo-xml field unit params)
+       xml-stream (get-xml-stream jamendo-answer)]
+    (xml-postparser (xml/parse xml-stream))))
+
 (defn get-paged-tags [num pagination]
   "Returns the list of tags from 'pagination' page. All tags
    divided on 'num' pages."
-  (let
-      [jamendo-answer (call-jamendo-xml "name" "tag"
-                                        (str "n=" num "&pn=" pagination))
-       xml-stream (get-xml-stream jamendo-answer)]
-    (map
-     (fn [x] (:content x))
-     (:content (xml/parse xml-stream)))))
+  (get-from-jamendo-smth "name" "tag"
+                  (str "n=" num "&pn=" pagination)
+                  (fn [x] (map
+                          (fn [x] (:content x))
+                          (:content x)))))
+
+(defn get-paged-albums
+  ([num pagination keyword]
+     "Returns the hash-map {id name} of albums which matches with 'keyword'
+      from 'pagination' page. All albums divided on 'num' pages."
+     (get-from-jamendo-smth "id+name" "album"
+                     (str "searchquery='" keyword "'"
+                          "&n=" num "&pn=" pagination)
+                     (fn [x] (loop [metalist (map
+                                             (fn [x]
+                                               (list (:content (x 0))
+                                                     (:content (x 1))))
+                                             (map
+                                              (fn [x] (:content x))
+                                              (:content x)))
+                                   hashmap '{}]
+                              (if (= metalist nil) hashmap
+                                  (recur
+                                   (next metalist)
+                                   (merge hashmap
+                                          (hash-map
+                                           (ffirst metalist)
+                                           (first (nfirst metalist)))))))))))
 
 ;; func - should be lambda function with one parameter - number
 ;; of requested page, which calls proper function with necessary
