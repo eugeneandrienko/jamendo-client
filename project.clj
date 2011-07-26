@@ -4,5 +4,5 @@
   :dependencies [[org.clojure/clojure "1.2.1"]
                  [org.clojure/clojure-contrib "1.2.0"]
                  [clj-http "0.1.3"]]
-  ;; don't forget write :main!
-  :dev-dependencies [[swank-clojure "1.3.2"]])
+  :dev-dependencies [[swank-clojure "1.4.0-SNAPSHOT"]]
+  :main jamendo-CLient.core)
