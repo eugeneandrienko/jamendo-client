@@ -33,6 +33,7 @@
        xml-stream (get-xml-stream jamendo-answer)]
     (xml-postparser (xml/parse xml-stream))))
 
+;; === DEPRECATED ===
 (defn get-paged-tags [num pagination]
   "Returns the list of tags from 'pagination' page. All tags
    divided on 'num' pages."
@@ -75,37 +76,38 @@
                                  "&n=" num "&pn=" pagination)
                             (fn [x] (album-postparser x)))))
 
-(defn get-album-songs [album-id]
-  "Return hash map {id, [name stream]} of songs in album with 'album-id'"
-  (defn track-postparser [xmlstream]
-    ;;make {id1 name1 stream1, id2 name2 stream2}
-    ;;from ((id name stream) (id name stream))
-    (loop [metalist 
-           ;; get <id></id>, <name></name>, <stream></stream> values
-           (for [track-data-level
-                 ;; get list of values between <track></track>
-                 (for [track-level
-                       (if (= (:tag xmlstream) :data)
-                         ;;get data between <data></data>
-                         (:content xmlstream)
-                         nil)
-                       :when (= (:tag track-level) :track)]
-                   (:content track-level))]
-             (list (nth (:content (nth track-data-level 0)) 0)
-                   (nth (:content (nth track-data-level 1)) 0)
-                   (nth (:content (nth track-data-level 2)) 0)))
-           hashmap '{}]
-      (if (= metalist nil) hashmap
-          (recur
-           (next metalist)
-           (merge hashmap
-                  (hash-map (ffirst metalist)
-                            (vector
-                             (second (first metalist))
-                             (nth (first metalist) 2))))))))
-  (get-from-jamendo-smth "id+name+stream" "track"
-                         (str "album_id=" album-id "&n=3")
-                         (fn [x] (track-postparser x))))
+(defn get-album-songs
+  ([album-id]
+     "Return hash map {id, [name stream]} of songs in album with 'album-id'"
+     (defn track-postparser [xmlstream]
+       ;;make {id1 name1 stream1, id2 name2 stream2}
+       ;;from ((id name stream) (id name stream))
+       (loop [metalist 
+              ;; get <id></id>, <name></name>, <stream></stream> values
+              (for [track-data-level
+                    ;; get list of values between <track></track>
+                    (for [track-level
+                          (if (= (:tag xmlstream) :data)
+                            ;;get data between <data></data>
+                            (:content xmlstream)
+                            nil)
+                          :when (= (:tag track-level) :track)]
+                      (:content track-level))]
+                (list (nth (:content (nth track-data-level 0)) 0)
+                      (nth (:content (nth track-data-level 1)) 0)
+                      (nth (:content (nth track-data-level 2)) 0)))
+              hashmap '{}]
+         (if (= metalist nil) hashmap
+             (recur
+              (next metalist)
+              (merge hashmap
+                     (hash-map (ffirst metalist)
+                               (vector
+                                (second (first metalist))
+                                (nth (first metalist) 2))))))))
+     (get-from-jamendo-smth "id+name+stream" "track"
+                            (str "album_id=" album-id "&n=3")
+                            (fn [x] (track-postparser x)))))
 
 ;; func - should be lambda function with one parameter - number
 ;; of requested page, which calls proper function with necessary
