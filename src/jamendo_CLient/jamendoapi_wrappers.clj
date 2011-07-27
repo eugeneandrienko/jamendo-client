@@ -42,28 +42,70 @@
                           (fn [x] (:content x))
                           (:content x)))))
 
+;; 'keyword' must not have non-Latin Characters (such as
+;; Cyrillic, for example - Скрипка) - Jamendo API, called not from
+;; browser, just return empty answer.
 (defn get-paged-albums
   ([num pagination keyword]
      "Returns the hash-map {id name} of albums which matches with 'keyword'
       from 'pagination' page. All albums divided on 'num' pages."
+     (defn album-postparser [xmlstream]
+       ;;make {id1 name1, id2 name2} from ((id name) (id name))
+       (loop [metalist 
+              ;; get <id></id> and <name></name> values
+              (for [album-data-level
+                    ;; get list of values between <album></album>
+                    (for [album-level (if (= (:tag xmlstream) :data)
+                                        ;; get data between <data></data>
+                                        (:content xmlstream)
+                                        nil)
+                          :when (= (:tag album-level) :album)]
+                      (:content album-level))]
+                (list (nth (:content (nth album-data-level 0)) 0)
+                      (nth (:content (nth album-data-level 1)) 0)))
+              hashmap '{}]
+         (if (= metalist nil) hashmap
+             (recur
+              (next metalist)
+              (merge hashmap
+                     (hash-map (ffirst metalist)
+                               (second (first metalist))))))))
      (get-from-jamendo-smth "id+name" "album"
-                     (str "searchquery='" keyword "'"
-                          "&n=" num "&pn=" pagination)
-                     (fn [x] (loop [metalist (map
-                                             (fn [x]
-                                               (list (:content (x 0))
-                                                     (:content (x 1))))
-                                             (map
-                                              (fn [x] (:content x))
-                                              (:content x)))
-                                   hashmap '{}]
-                              (if (= metalist nil) hashmap
-                                  (recur
-                                   (next metalist)
-                                   (merge hashmap
-                                          (hash-map
-                                           (ffirst metalist)
-                                           (first (nfirst metalist)))))))))))
+                            (str "searchquery='" keyword "'"
+                                 "&n=" num "&pn=" pagination)
+                            (fn [x] (album-postparser x)))))
+
+(defn get-album-songs [album-id]
+  "Return hash map {id, [name stream]} of songs in album with 'album-id'"
+  (defn track-postparser [xmlstream]
+    ;;make {id1 name1 stream1, id2 name2 stream2}
+    ;;from ((id name stream) (id name stream))
+    (loop [metalist 
+           ;; get <id></id>, <name></name>, <stream></stream> values
+           (for [track-data-level
+                 ;; get list of values between <track></track>
+                 (for [track-level
+                       (if (= (:tag xmlstream) :data)
+                         ;;get data between <data></data>
+                         (:content xmlstream)
+                         nil)
+                       :when (= (:tag track-level) :track)]
+                   (:content track-level))]
+             (list (nth (:content (nth track-data-level 0)) 0)
+                   (nth (:content (nth track-data-level 1)) 0)
+                   (nth (:content (nth track-data-level 2)) 0)))
+           hashmap '{}]
+      (if (= metalist nil) hashmap
+          (recur
+           (next metalist)
+           (merge hashmap
+                  (hash-map (ffirst metalist)
+                            (vector
+                             (second (first metalist))
+                             (nth (first metalist) 2))))))))
+  (get-from-jamendo-smth "id+name+stream" "track"
+                         (str "album_id=" album-id "&n=3")
+                         (fn [x] (track-postparser x))))
 
 ;; func - should be lambda function with one parameter - number
 ;; of requested page, which calls proper function with necessary
