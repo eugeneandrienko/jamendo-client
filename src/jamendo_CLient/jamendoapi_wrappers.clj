@@ -126,3 +126,22 @@
        :else (concat requested-list
                      (get-list-with-delay-iter func (+ num 1))))))
   (get-list-with-delay-iter func 1))
+
+;;; API safe functions.
+;;; This functions are analog of appropriate get-* functions
+;;; which called with 1.1 second delay - this is a requirement
+;;; of Jamendo API terms of use.
+;;; FIXME: maybe use macros?
+(defn get-paged-tags-apisafe [num pagination]
+  (. Thread sleep 1100)
+  (get-paged-tags num pagination))
+
+(defn get-paged-albums-apisafe
+  ([num pagination keyword]
+     (. Thread sleep 1100)
+     (get-paged-albums num pagination keyword)))
+
+(defn get-album-songs
+  ([album-id]
+     (. Thread sleep 1100)
+     (get-album-songs album-id)))
