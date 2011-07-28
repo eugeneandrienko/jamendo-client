@@ -6,7 +6,8 @@
   (:require [clj-http.client :as client])
   (:require [clojure.xml :as xml])
   (:import java.io.ByteArrayInputStream)
-  (:import java.lang.String))
+  (:import java.lang.String)
+  (:import java.net.URLEncoder))
 
 (defn- call-jamendo-xml [field unit params]
   (client/get
@@ -72,7 +73,8 @@
                      (hash-map (ffirst metalist)
                                (second (first metalist))))))))
      (get-from-jamendo-smth "id+name" "album"
-                            (str "searchquery='" keyword "'"
+                            (str "searchquery='"
+                                 (URLEncoder/encode keyword) "'"
                                  "&n=" num "&pn=" pagination)
                             (fn [x] (album-postparser x)))))
 

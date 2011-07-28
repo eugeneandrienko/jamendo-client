@@ -38,7 +38,11 @@
         [nextresult (get-paged-albums-apisafe 10 (+ page 1) keyword)]
       (if (not= result '{nil nil})
         (do
-          (println result)
+          (println "ID\tAlbum name")
+          (println "--\t----------")
+          (println (map
+                    (fn [x]
+                      (str (x 0) "\t" (x 1) "\n")) result))
           (println)
           (println
            "Enter 'quit' to return to top-level or press Enter to continue")
