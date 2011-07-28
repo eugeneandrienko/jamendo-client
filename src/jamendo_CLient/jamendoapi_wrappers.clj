@@ -78,7 +78,7 @@
 
 (defn get-album-songs
   ([album-id]
-     "Return hash map {id, [name stream]} of songs in album with 'album-id'"
+     "Return hash map {id [name stream]} of songs in album with 'album-id'"
      (defn track-postparser [xmlstream]
        ;;make {id1 name1 stream1, id2 name2 stream2}
        ;;from ((id name stream) (id name stream))
@@ -141,7 +141,7 @@
      (. Thread sleep 1100)
      (get-paged-albums num pagination keyword)))
 
-(defn get-album-songs
+(defn get-album-songs-apisafe
   ([album-id]
      (. Thread sleep 1100)
      (get-album-songs album-id)))
