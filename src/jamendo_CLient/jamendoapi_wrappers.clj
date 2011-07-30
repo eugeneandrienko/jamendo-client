@@ -111,7 +111,7 @@
                             (str "album_id=" album-id "&n=3")
                             (fn [x] (track-postparser x)))))
 
-;; func - should be lambda function with one parameter - number
+;; func - should be function with one parameter - number
 ;; of requested page, which calls proper function with necessary
 ;; parameters.
 (defn- get-list-with-delay [func]
