@@ -1,5 +1,6 @@
 (ns jamendo-CLient.user-interface
-  (:use [jamendo-CLient.jamendoapi-wrappers :only [get-paged-albums-apisafe]])
+  (:use [jamendo-CLient.jamendoapi-wrappers :only [get-paged-albums-apisafe
+                                                   get-album-songs]])
   (:import java.lang.String))
 
 (declare list-of-commands)
@@ -50,3 +51,11 @@
             :quit
             (recur (+ page 1)
                    nextresult)))))))
+
+(defn list-album [id]
+  "Print list of songs in album with ID = 'id'"
+  (println "ID\tSong name")
+  (println "--\t---------")
+  (println (map
+            (fn [x] (str (x 0) "\t" ((x 1) 0) "\n"))
+            (get-album-songs id))))
