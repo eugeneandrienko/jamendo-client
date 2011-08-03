@@ -142,8 +142,3 @@
   ([num pagination keyword]
      (. Thread sleep 1100)
      (get-paged-albums num pagination keyword)))
-
-(defn get-album-songs-apisafe
-  ([album-id]
-     (. Thread sleep 1100)
-     (get-album-songs album-id)))
