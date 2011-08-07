@@ -1,6 +1,7 @@
 (ns jamendo-CLient.user-interface
   (:use [jamendo-CLient.jamendoapi-wrappers :only [get-paged-albums-apisafe
-                                                   get-album-songs]])
+                                                   get-album-songs]]
+        [jamendo-CLient.player :only [play-stream]])
   (:import java.lang.String))
 
 (declare list-of-commands)
@@ -59,3 +60,10 @@
   (println (map
             (fn [x] (str (x 0) "\t" ((x 1) 0) "\n"))
             (get-album-songs id))))
+
+(defn play-album [id]
+  "Play all songs in album with ID=id"
+  (dorun
+   (map
+    (fn [x] (play-stream ((x 1) 1)))
+    (get-album-songs id))))

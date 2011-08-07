@@ -5,7 +5,8 @@
                                               list-of-commands
                                               prompt
                                               print-search-albums-result
-                                              list-album]]))
+                                              list-album
+                                              play-album]]))
 
 (defn process-user-commands []
   "Process user input and call proper function
@@ -17,6 +18,7 @@
                                 (sl/join " " (next user-input)))
        (= cmd "list-commands") (list-of-commands)
        (= cmd "list-album") (list-album (second user-input))
+       (= cmd "play-album") (play-album (second user-input))
        :else (if (not= cmd "quit")
                (do (println "Unknown command!")
                    (list-of-commands))))

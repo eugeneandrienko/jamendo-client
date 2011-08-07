@@ -1,3 +1,5 @@
-(ns jamendo-CLient.player)
+(ns jamendo-CLient.player
+  (:require [clojure.contrib.shell-out :as shout]))
 
-(defn play-stream [surl])
+(defn play-stream [surl]
+  (shout/sh "mplayer" " " surl))
