@@ -1,6 +1,7 @@
 (ns jamendo-CLient.user-interface
   (:use [jamendo-CLient.jamendoapi-wrappers :only [get-paged-albums-apisafe
-                                                   get-album-songs]])
+                                                   get-album-songs
+                                                   get-song]])
   (:import java.lang.String))
 
 (defn u-search-albums [keyword]
@@ -33,4 +34,5 @@
     (fn [x] (println ((x 1) 1)))
     (get-album-songs id))))
 
-(defn u-print-song [id])
+(defn u-print-song [id]
+  (println (get-song id)))
