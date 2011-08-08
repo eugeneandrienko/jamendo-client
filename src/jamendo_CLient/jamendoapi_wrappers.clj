@@ -98,7 +98,7 @@
                                 (second (first metalist))
                                 (nth (first metalist) 2))))))))
      (get-from-jamendo-smth "id+name+stream" "track"
-                            (str "album_id=" album-id "&n=3")
+                            (str "album_id=" album-id)
                             (fn [x] (track-postparser x)))))
 
 (defn get-song [id]
