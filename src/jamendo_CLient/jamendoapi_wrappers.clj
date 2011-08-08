@@ -34,16 +34,6 @@
        xml-stream (get-xml-stream jamendo-answer)]
     (xml-postparser (xml/parse xml-stream))))
 
-;; === DEPRECATED ===
-(defn get-paged-tags [num pagination]
-  "Returns the list of tags from 'pagination' page. All tags
-   divided on 'num' pages."
-  (get-from-jamendo-smth "name" "tag"
-                  (str "n=" num "&pn=" pagination)
-                  (fn [x] (map
-                          (fn [x] (:content x))
-                          (:content x)))))
-
 ;; 'keyword' must not have non-Latin Characters (such as
 ;; Cyrillic, for example - Скрипка) - Jamendo API, called not from
 ;; browser, just return empty answer.
@@ -110,24 +100,6 @@
      (get-from-jamendo-smth "id+name+stream" "track"
                             (str "album_id=" album-id "&n=3")
                             (fn [x] (track-postparser x)))))
-
-;; func - should be function with one parameter - number
-;; of requested page, which calls proper function with necessary
-;; parameters.
-(defn- get-list-with-delay [func]
-  "Makes list from lists returned by 'get-paged-*' functions with
-   one second delay between calls."
-  (defn- get-list-with-delay-iter [func num]
-    ; we need to sleep one second or more  before each call - this is a
-    ; requirement of Jamendo API Terms Of Use.
-    (. Thread sleep 1500)
-    (let [requested-list (func num)]
-      (println requested-list)
-      (cond
-       (= requested-list '()) '()
-       :else (concat requested-list
-                     (get-list-with-delay-iter func (+ num 1))))))
-  (get-list-with-delay-iter func 1))
 
 ;;; API safe functions.
 ;;; This functions are analog of appropriate get-* functions
