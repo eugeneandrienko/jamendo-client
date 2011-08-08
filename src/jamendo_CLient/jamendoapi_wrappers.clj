@@ -103,7 +103,9 @@
 
 (defn get-song [id]
   "Returns stream URL for song with id"
-  (get-from-jamendo-smth "stream" "track" "id=3245" (fn [x] ((:content ((:content x) 0)) 0))))
+  (get-from-jamendo-smth "stream" "track"
+                         (str "id=" id)
+                         (fn [x] ((:content ((:content x) 0)) 0))))
 
 ;;; API safe functions.
 ;;; This functions are analog of appropriate get-* functions
