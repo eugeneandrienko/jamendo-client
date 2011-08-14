@@ -1,8 +1,15 @@
 (ns jamendo-CLient.user-interface
   (:use [jamendo-CLient.jamendoapi-wrappers :only [get-paged-albums-apisafe
                                                    get-album-songs
-                                                   get-song]])
-  (:import java.lang.String))
+                                                   get-song]]))
+
+(defn- list-to-string [mylist]
+  "Converts list to string"
+  (loop [result-str ""
+         looplist mylist]
+    (if (= (count looplist) 0)
+      result-str
+      (recur (str result-str (first looplist)) (next looplist)))))
 
 (defn u-search-albums [keyword]
   "Print result of search by 'keyword' on albums"
