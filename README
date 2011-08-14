@@ -1,13 +1,28 @@
 # jamendo-CLient
 
-Command-line client for Jamendo.
+Simple command-line client for Jamendo. It is don't playing songs - it just 
+return URL's to streams with selected songs.
 
 ## Usage
 
-FIXME: write
+You should run this program with next command-line:
+ java -jar jamendo-CLient.jar [args for jamendo client]
+You can use next arguments:
+ --help - prints help message
+ --search-albums <keyval> - search and print list of albums, whose description
+or name matched with "keyval"
+ --list-album <id> - print list of songs in album with "id"
+ --print-album <id>  - print stream URL for every song in album with "id"
+ --print-song <id> - print stream URL for song with "id"
+
+jamendo-CLient cannot play music streams - you should pass stream URL's to 
+MPlayer or another program to listen a music.
 
 ## License
 
-Copyright (C) 2011 FIXME
+Copyright (C) 2011 h0rr0rr_drag0n
 
 Distributed under the Eclipse Public License, the same as Clojure.
+
+You can redistribute and modify this program with saving original 
+copyright and license type.
