@@ -21,18 +21,20 @@
         (do
           (println "ID\tAlbum name")
           (println "--\t----------")
-          (println (map
-                    (fn [x]
-                      (str (x 0) "\t" (x 1) "\n")) result))
+          (println (list-to-string
+                    (map
+                     (fn [x]
+                       (str (x 0) "\t" (x 1) "\n")) result)))
           (recur (+ page 1) nextresult))))))
 
 (defn u-list-album [id]
   "Print list of songs in album with ID = 'id'"
   (println "ID\tSong name")
   (println "--\t---------")
-  (println (map
-            (fn [x] (str (x 0) "\t" ((x 1) 0) "\n"))
-            (get-album-songs id))))
+  (println (list-to-string
+            (map
+             (fn [x] (str (x 0) "\t" ((x 1) 0) "\n"))
+             (get-album-songs id)))))
 
 (defn u-print-album [id]
   "Play all songs in album with ID=id"
