@@ -27,12 +27,12 @@
      :else nil)
     "UTF-8")))
 
-(defn- get-from-jamendo-smth [field unit params xml-postparser]
-  "Get smth content from Jamendo in paged mode."
-  (let
-      [jamendo-answer (call-jamendo-xml field unit params)
-       xml-stream (get-xml-stream jamendo-answer)]
-    (xml-postparser (xml/parse xml-stream))))
+(defn  get-from-jamendo-smth [field unit params xml-parser]
+  "Returns smth content from Jamendo"
+  (xml-parser
+   (xml/parse
+    (get-xml-stream
+     (call-jamendo-xml field unit params)))))
 
 ;; 'keyword' must not have non-Latin Characters (such as
 ;; Cyrillic, for example - Скрипка) - Jamendo API, called not from
