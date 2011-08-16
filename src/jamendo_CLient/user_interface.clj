@@ -5,11 +5,7 @@
 
 (defn- list-to-string [mylist]
   "Converts list to string"
-  (loop [result-str ""
-         looplist mylist]
-    (if (= (count looplist) 0)
-      result-str
-      (recur (str result-str (first looplist)) (next looplist)))))
+  (reduce (fn [x y] (str x y)) "" mylist))
 
 (defn u-search-albums [keyword]
   "Print result of search by 'keyword' on albums"
